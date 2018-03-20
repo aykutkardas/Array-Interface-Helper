@@ -70,7 +70,7 @@ Array
 
 ## Use with CodeIgniter
 
-Copy the file into the "application/helpers" directory.
+Copy the file into the "application/helpers/**array_interface_helper.php**" directory.
 
 Call in the controller and use.
 
