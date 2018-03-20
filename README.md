@@ -75,7 +75,7 @@ Copy the file into the "application/helpers" directory.
 Call in the controller and use.
 
 ```php
-class Posts extend CI_Controlle {
+class Posts extends CI_Controller {
 
   public function __construct()
   {
