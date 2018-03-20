@@ -5,7 +5,7 @@ Create an interface for control.
 ```php
 $PostInterface = array(
   'title' => array(
-    'type'       => 'string',
+    'type'       => 'string', //  "string|integer|boolean|array|double"
     'required'   => true,
     'max_length' => 15,
     'min_length' => 2

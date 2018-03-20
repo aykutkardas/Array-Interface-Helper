@@ -9,9 +9,13 @@
 
 if(!function_exists('array_interface')) {
 
-  function array_interface($interface, $array, $callback)
+  function array_interface($interface, $array)
   {
 
+    // Check Arguments
+    if(!$interface || !$array)
+      return false;
+    
     // Create Report.
     $report = array();
     // Create Controlled Array.
@@ -28,9 +32,10 @@ if(!function_exists('array_interface')) {
         foreach($interface[$key] as $k => $v) {
           
           
+          
           // Required control
           if($k === 'required') {
-            if(!ai_check_required($v, $array[$key])) {
+            if(!ai_check_required($v, @$array[$key])) {
               $report[$key][$k] = "This field can not be left blank!";
               $error = true;
             }
@@ -38,36 +43,37 @@ if(!function_exists('array_interface')) {
           
           // Property Type Control
           if($k === 'type') {
-            if(!ai_check_type($v, $array[$key])){
+            if(!ai_check_type($v, @$array[$key])){
               $report[$key][$k] = "This field can only be '$v!";
               $error = true;
             };
           }
           
-          // Propery Max Length Control
+          // Property Max Length Control
           if($k === 'max_length') {
-            if(!ai_check_max_length($v, $array[$key])){
+            if(!ai_check_max_length($v, @$array[$key])){
                 $report[$key][$k] = "This field can be up to '$v' lengths long!";
                 $error = true;
             };
           }
           
-          // Propery Min Length 
+          // Property Min Length 
           if($k === 'min_length') {
-            if(!ai_check_min_length($v, $array[$key])){
+            if(!ai_check_min_length($v, @$array[$key])){
                 $report[$key][$k] = "This field can be at least '$v' long!";
                 $error = true;
             };
           }
 
-          $controlledArray[$key] = $array[$key];
+          if(isset($array[$key]))
+            $controlledArray[$key] = @$array[$key];
 
           
 
         }
 
       } else {
-        if(!ai_check_required($interface[$key], $array[$key])) {
+        if(!ai_check_required($interface[$key], @$array[$key])) {
           $report[$key]['required'] = "This field can not be left blank!";
           $error = true;
         }
@@ -87,7 +93,7 @@ if(!function_exists('array_interface')) {
 
 
   // Type check.
-  // $type = "string|integer|boolean|function|array"
+  // $type = "string|integer|double|boolean|array"
   function ai_check_type($type, $data)
   {
     if(!isset($data)) return true;
@@ -130,7 +136,7 @@ if(!function_exists('array_interface')) {
     else
       return false;
 
-    if($data_length > $len)
+    if($data_length >= $len)
       return true;
 
     return false;
@@ -140,10 +146,20 @@ if(!function_exists('array_interface')) {
   // $required = true|false
   function ai_check_required($required, $data)
   {
-    if($required === true && isset($data))
+    if($required === true && isset($data)) {
+      
+      if(ai_check_type('integer', $data) || ai_check_type('double', $data))
+        return true;
+      else if(ai_check_type('boolean', $data))
+        return true;
+      else if(ai_check_min_length(1, $data))
+        return true;
+      else
+        return false;
+        
+    } else if($required === false) {
       return true;
-    else if($required === false)
-      return true;
+    }
 
     return false;
   }
